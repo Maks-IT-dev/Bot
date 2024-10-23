@@ -55,5 +55,15 @@ bot.on('callback_query', (ctx) => {
   }
 });
 
+// Вебхук для Vercel
+export default async function handler(req, res) {
+  try {
+    await bot.handleUpdate(req.body); // Обробка оновлень від Telegram
+  } catch (err) {
+    console.error('Помилка в обробці:', err);
+  }
+  res.status(200).send('ok');
+}
+
 // Запуск бота
 bot.launch();
