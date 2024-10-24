@@ -65,5 +65,38 @@ export default async function handler(req, res) {
   res.status(200).send('ok');
 }
 
+// Запуск Webhook
+import { createServer } from 'http';
+
+const server = createServer((req, res) => {
+  if (req.method === 'POST' && req.url === '/api') {
+    let body = '';
+
+    req.on('data', (chunk) => {
+      body += chunk.toString();
+    });
+
+    req.on('end', () => {
+      try {
+        const update = JSON.parse(body); // Парсинг тіла запиту
+        bot.handleUpdate(update);
+        res.end('ok');
+      } catch (error) {
+        console.error('Помилка в обробці:', error);
+        res.writeHead(500);
+        res.end('error');
+      }
+    });
+  } else {
+    res.writeHead(404);
+    res.end('not found');
+  }
+});
+
+// Почати слухати сервер на порту 3000
+server.listen(3000, () => {
+  console.log('Сервер запущено на порту 3000');
+});
+
 // Запуск бота
 bot.launch();
